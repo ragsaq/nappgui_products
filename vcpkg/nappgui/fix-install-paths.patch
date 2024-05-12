@@ -1,0 +1,73 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6ea70b1..07dc9ea 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -59,17 +59,17 @@ foreach (target ${ALL_TARGETS})
+ endforeach()
+ 
+ # Install global files
+-install(FILES "${NAPPGUI_ROOT_PATH}/src/nappgui.h" DESTINATION "inc" PERMISSIONS ${INSTALL_PERM})
+-install(FILES "${NAPPGUI_NRC}" DESTINATION "bin" PERMISSIONS ${INSTALL_PERM})
+-install(DIRECTORY "${NAPPGUI_ROOT_PATH}/prj" DESTINATION ".")
+-install(EXPORT nappgui-targets DESTINATION "cmake" NAMESPACE nappgui::)
+-install(FILES "${NAPPGUI_ROOT_PATH}/prj/nappgui-config.cmake" DESTINATION "cmake")
+-install(FILES "${NAPPGUI_INSTALL_DEFINES}" DESTINATION "cmake")
++install(FILES "${NAPPGUI_ROOT_PATH}/src/nappgui.h" DESTINATION "include" PERMISSIONS ${INSTALL_PERM})
++install(FILES "${NAPPGUI_NRC}" DESTINATION "tools/nappgui" PERMISSIONS ${INSTALL_PERM})
++install(DIRECTORY "${NAPPGUI_ROOT_PATH}/prj" DESTINATION "share/nappgui")
++install(EXPORT nappgui-targets DESTINATION "share/nappgui" NAMESPACE nappgui::)
++install(FILES "${NAPPGUI_ROOT_PATH}/prj/nappgui-config.cmake" DESTINATION "share/nappgui")
++install(FILES "${NAPPGUI_INSTALL_DEFINES}" DESTINATION "share/nappgui")
+ file(WRITE "${CMAKE_BINARY_DIR}/CMAKE_TOOLKIT" "${CMAKE_TOOLKIT}")
+ file(WRITE "${CMAKE_BINARY_DIR}/CMAKE_OSX_DEPLOYMENT_TARGET" "${CMAKE_OSX_DEPLOYMENT_TARGET}")
+ file(WRITE "${CMAKE_BINARY_DIR}/NAPPGUI_SHARED" "${NAPPGUI_SHARED}")
+ file(WRITE "${CMAKE_BINARY_DIR}/NAPPGUI_VERSION" "${NAPPGUI_MAJOR}.${NAPPGUI_MINOR}.${NAPPGUI_PATCH}.${NAPPGUI_BUILD}")
+-install(FILES "${CMAKE_BINARY_DIR}/CMAKE_TOOLKIT" DESTINATION "cmake")
+-install(FILES "${CMAKE_BINARY_DIR}/CMAKE_OSX_DEPLOYMENT_TARGET" DESTINATION "cmake")
+-install(FILES "${CMAKE_BINARY_DIR}/NAPPGUI_SHARED" DESTINATION "cmake")
+-install(FILES "${CMAKE_BINARY_DIR}/NAPPGUI_VERSION" DESTINATION "cmake")
++install(FILES "${CMAKE_BINARY_DIR}/CMAKE_TOOLKIT" DESTINATION "share/nappgui")
++install(FILES "${CMAKE_BINARY_DIR}/CMAKE_OSX_DEPLOYMENT_TARGET" DESTINATION "share/nappgui")
++install(FILES "${CMAKE_BINARY_DIR}/NAPPGUI_SHARED" DESTINATION "share/nappgui")
++install(FILES "${CMAKE_BINARY_DIR}/NAPPGUI_VERSION" DESTINATION "share/nappgui")
+diff --git a/prj/NAppTarget.cmake b/prj/NAppTarget.cmake
+index 681054b..f697fc1 100644
+--- a/prj/NAppTarget.cmake
++++ b/prj/NAppTarget.cmake
+@@ -821,7 +821,7 @@ function(nap_target targetName targetType dependList nrcMode)
+                 RUNTIME DESTINATION "bin" PERMISSIONS ${INSTALL_PERM}
+                 ARCHIVE DESTINATION "lib" PERMISSIONS ${INSTALL_PERM}
+                 BUNDLE DESTINATION "bin"
+-                PUBLIC_HEADER DESTINATION "inc/${targetPathSingle}")
++                PUBLIC_HEADER DESTINATION "include/${targetPathSingle}")
+ 
+     # Install the .pdb files
+     if (targetType STREQUAL STATIC_LIB)
+@@ -881,9 +881,9 @@ function(nap_target targetName targetType dependList nrcMode)
+         target_include_directories(${targetName} PUBLIC $<BUILD_INTERFACE:${NAPPGUI_ROOT_PATH}/src>)
+     endif()
+ 
+-    # Installed TARGET local and 'inc' directory include
+-    target_include_directories(${targetName} PUBLIC $<INSTALL_INTERFACE:inc>)
+-    target_include_directories(${targetName} PUBLIC $<INSTALL_INTERFACE:inc/${targetPathSingle}>)
++    # Installed TARGET local and 'include' directory include
++    target_include_directories(${targetName} PUBLIC $<INSTALL_INTERFACE:include>)
++    target_include_directories(${targetName} PUBLIC $<INSTALL_INTERFACE:include/${targetPathSingle}>)
+ 
+     # Include dir for target generated resources
+     if (resIncludeDir)
+diff --git a/prj/nappgui-config.cmake b/prj/nappgui-config.cmake
+index 4a4aa39..b86a95e 100644
+--- a/prj/nappgui-config.cmake
++++ b/prj/nappgui-config.cmake
+@@ -29,8 +29,8 @@ if (NOT CMAKE_CONFIGURATION_TYPES)
+ endif()
+ 
+ get_filename_component(NAPPGUI_ROOT_PATH "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
+-set(NAPPGUI_INCLUDE_PATH "${NAPPGUI_ROOT_PATH}/inc")
+-set(NAPPGUI_NRC "${NAPPGUI_ROOT_PATH}/bin/nrc${CMAKE_EXECUTABLE_SUFFIX}")
++set(NAPPGUI_INCLUDE_PATH "${NAPPGUI_ROOT_PATH}/include")
++set(NAPPGUI_NRC "${NAPPGUI_ROOT_PATH}/tools/nappgui/nrc${CMAKE_EXECUTABLE_SUFFIX}")
+ set(NAPPGUI_LIBRARIES "nappgui::inet;nappgui::osapp;nappgui::gui;nappgui::osgui;nappgui::draw2d;nappgui::geom2d;nappgui::core;nappgui::osbs;nappgui::sewer")
+ 
+ # Project definitions

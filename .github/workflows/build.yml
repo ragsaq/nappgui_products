@@ -1,0 +1,89 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+env:
+    VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+jobs:
+  build:
+    name: ${{ matrix.triplet }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        triplet:
+          - x64-linux
+          - x64-windows
+          - x64-windows-static
+          - x86-windows
+          - x86-windows-static
+        os:
+          - ubuntu-latest
+          - windows-latest
+        include:
+          - triplet: x64-linux
+            os: ubuntu-latest
+            arch: x64
+          - triplet: x64-windows
+            os: windows-latest
+            arch: x64
+          - triplet: x64-windows-static
+            os: windows-latest
+            arch: x64
+          - triplet: x86-windows
+            os: windows-latest
+            arch: x86
+          - triplet: x86-windows-static
+            os: windows-latest
+            arch: x86
+        exclude:
+          - os: ubuntu-latest
+            triplet: x64-windows
+          - os: ubuntu-latest
+            triplet: x64-windows-static
+          - os: ubuntu-latest
+            triplet: x86-windows
+          - os: ubuntu-latest
+            triplet: x86-windows-static
+          - os: windows-latest
+            triplet: x64-linux
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - if: runner.os == 'Linux'
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: libgl1-mesa-dev libglu1-mesa-dev libxi-dev libxrandr-dev libxtst-dev libxxf86vm-dev mesa-common-dev
+        version: 1.0
+        execute_install_scripts: true
+
+    - if: runner.os == 'Windows'
+      uses: TheMrMilchmann/setup-msvc-dev@v2
+      with:
+        arch: ${{ matrix.arch }}
+
+    - uses: turtlesec-no/get-ninja@main
+
+    - run: vcpkg install nappgui --overlay-ports=vcpkg --triplet=${{ matrix.triplet }}
+
+    - if: runner.os == 'Linux'
+      run: |
+        cmake --preset ${{ matrix.triplet }}-release -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
+        cmake --build --preset ${{ matrix.triplet }}-release
+
+    - if: runner.os == 'Windows'
+      run: |
+        cmake --preset ${{ matrix.triplet }}-release -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
+        cmake --build --preset ${{ matrix.triplet }}-release

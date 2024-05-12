@@ -1,0 +1,5 @@
+nappgui is compatible with built-in CMake variables:
+
+    find_package(nappgui REQUIRED)
+    target_include_directories(main PRIVATE ${NAPPGUI_INCLUDES})
+    target_link_libraries(main PRIVATE ${NAPPGUI_LIBRARIES})

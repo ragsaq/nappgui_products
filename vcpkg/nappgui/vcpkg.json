@@ -1,0 +1,20 @@
+{
+  "name": "nappgui",
+  "version": "1.4.1",
+  "description": "Cross-Platform C SDK. Build portable desktop applications for Windows, macOS and Linux, using just C.",
+  "homepage": "https://github.com/frang75/nappgui_src",
+  "dependencies": [
+    {
+      "name": "curl",
+      "platform": "linux"
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    }
+  ]
+}
